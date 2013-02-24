@@ -176,6 +176,8 @@ endfunction
 
 " カレントバッファへスニペットを挿入する
 function! s:InsertSnippet()
+    let current_line = line('.')
+
     let new_lines = []
     let n = line('$')
     for i in range(1,n)
@@ -212,6 +214,9 @@ function! s:InsertSnippet()
         call append(0,line)
     endfor
     call s:IndentCurrentBuffer()
+
+    execute(':'.current_line)
+
 endfunction
 
 
