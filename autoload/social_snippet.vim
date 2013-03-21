@@ -147,8 +147,7 @@ function! s:LoadSnippet(path_str)
 
     " コードの生成
     let namespaces = s:GetNamespacesFromPath(snip_info.path)
-    let res = []
-    let res = res + ['// @snippet<'.snip_info.user_name.'/'.snip_info.repo_name.':'.snip_info.path.'>']
+    let res = ['// @snippet<'.snip_info.user_name.'/'.snip_info.repo_name.':'.snip_info.path.'>']
     for namespace in namespaces
         let res = res + ['namespace '.namespace.' {']
     endfor
@@ -156,7 +155,7 @@ function! s:LoadSnippet(path_str)
     for namespace in namespaces
         let res = res + ['}']
     endfor
-    let res = res + ['']
+    let res = res
     let s:code[key] = res
     
     call add(s:ordered, key)
@@ -168,7 +167,6 @@ function! s:CheckLoadedSnippet(lines)
         let line = a:lines[i]
         if s:isSnippetLine(line)
             let key = s:GetSnippetPath(line)
-            echo 'is: key = '.key
             let s:snippets[key] = 1
         endif
     endfor
@@ -184,7 +182,8 @@ function! s:InsertSnippet()
         call add(new_lines, getline(i))
     endfor
 
-    let t = 0 
+    let t = 0
+    let found_snippet = 0
     for i in range(1,n)
         let line = getline(i)
         if s:isSnipLine(line)
@@ -204,11 +203,16 @@ function! s:InsertSnippet()
             endfor
             let new_lines = new_lines + bottom
             let t = t + diff - 1
+            let found_snippet = 1
         endif
         let t = t + 1
     endfor
 
-    :%d
+    if ! found_snippet
+        return
+    endif
+
+    :%d " 全ての行を削除
     call reverse(new_lines)
     for line in new_lines
         call append(0,line)
@@ -216,7 +220,5 @@ function! s:InsertSnippet()
     call s:IndentCurrentBuffer()
 
     execute(':'.current_line)
-
 endfunction
-
 
