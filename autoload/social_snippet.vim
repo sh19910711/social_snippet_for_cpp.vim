@@ -147,7 +147,7 @@ function! s:LoadSnippet(path_str)
 
     " コードの生成
     let namespaces = s:GetNamespacesFromPath(snip_info.path)
-    let res = ['// @snippet<'.snip_info.user_name.'/'.snip_info.repo_name.':'.snip_info.path.'>']
+    let res = ['', '// @snippet<'.snip_info.user_name.'/'.snip_info.repo_name.':'.snip_info.path.'>']
     for namespace in namespaces
         let res = res + ['namespace '.namespace.' {']
     endfor
