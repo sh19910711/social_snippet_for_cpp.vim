@@ -191,7 +191,11 @@ function! s:InsertSnippet()
             call s:CheckLoadedSnippet(new_lines)
             let snippet_path = s:GetSnippetPath(line)
             call s:LoadSnippet(snippet_path)
-            let top = new_lines[0:t-1]
+            if t > 0
+                let top = new_lines[0:t-1]
+            else
+                let top = []
+            endif
             let bottom = new_lines[t+1:]
             
             let new_lines = top
