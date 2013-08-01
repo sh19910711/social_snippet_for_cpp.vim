@@ -30,7 +30,7 @@ endfunction
 function! social_snippet#InsertSnippet()
     call s:InsertSnippet()
 endfunction
-
+ --recursive
 function! social_snippet#LoadSnippet(path_str)
     call s:LoadSnippet(a:path_str)
 endfunction
@@ -49,7 +49,7 @@ function! s:InstallRepository(repo_path)
         echo 'already exist'
     else
         let url = 'http://github.com/'.a:repo_path
-        let cmd = 'git clone '.url.' '.path
+        let cmd = 'git clone '.url.' '.path.' --recursive'
         echo cmd
         call system(cmd)
     endif
@@ -123,7 +123,6 @@ endfunction
 function! s:LoadSnippet(path_str)
     let key = a:path_str
     if has_key(s:snippets, key)
-        echo 'loaded'
         return
     endif
     let s:snippets[key] = 1
