@@ -30,7 +30,7 @@ endfunction
 function! social_snippet#InsertSnippet()
     call s:InsertSnippet()
 endfunction
- --recursive
+
 function! social_snippet#LoadSnippet(path_str)
     call s:LoadSnippet(a:path_str)
 endfunction
