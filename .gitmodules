@@ -1,0 +1,3 @@
+[submodule "spec/plugin/vimtest"]
+	path = spec/plugin/vimtest
+	url = https://github.com/kannokanno/vimtest.git

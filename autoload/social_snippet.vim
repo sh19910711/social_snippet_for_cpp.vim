@@ -8,6 +8,10 @@ let s:snippets = {}
 let s:ordered = []
 let s:code = {}
 
+" バージョン情報
+function! social_snippet#GetVersion()
+    return '0.0.0'
+endfunction
 
 " インターフェース系の関数
 function! social_snippet#Reset()
