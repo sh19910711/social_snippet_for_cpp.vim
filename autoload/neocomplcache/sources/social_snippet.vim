@@ -18,32 +18,14 @@ function! s:source.get_keyword_pos(str)
 endfunction
 
 function! s:source.get_complete_words(post, str)
-    let path = matchstr(a:str, '^\/\/\s*@snip\s*<\zs.*[:\/]\@<=\ze>\?')
-    let cand = matchstr(a:str, '[a-z0-9\.]*\ze>\?$')
-
-    let snip_info = {
-                \   'user': matchstr(path, '^\w*'),
-                \   'repo': matchstr(path, '^\w*\/\zs\w*'),
-                \   'path': matchstr(path, ':\zs.*\ze>\?')
-                \}
-
-    let snippet_path = '~/.social-snippets/cache'
-    if snip_info.user != ''
-        let snippet_path = snippet_path . '/' . snip_info.user
-    endif
-    if snip_info.repo != ''
-        let snippet_path = snippet_path . '/' . snip_info.repo
-    endif
-    if snip_info.user != ''
-        let snippet_path = snippet_path . '/' . snip_info.path
-    endif
+    let snippet_info = social_snippet#util#get_snippet_info(a:str)
 
     let l:list = []
-    let ls_list = s:get_dir_list(snippet_path)
+    let ls_list = s:get_dir_list(snippet_info.path)
     for x in ls_list
-        if match(x, '^' . cand ) != -1
+        if match(x, '^' . snippet_info.cand ) != -1
             call add( l:list, {
-                        \   'word': '// @snip <' . path . x,
+                        \   'word': '// @snip <' . snippet_info.path . x,
                         \   'menu': '[SS]'
                         \})
         endif
