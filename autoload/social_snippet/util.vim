@@ -15,23 +15,32 @@ function! social_snippet#util#get_snippet_info(str)
   let cand = matchstr(a:str, '[a-z0-9\.]*\ze>\?$')
   let type = ""
 
-  if match(a:str, '^[a-z0-9]')
+  if match(snippet_path, '^[a-z0-9]') == 0
     let type = "github"
+  elseif match(snippet_path, '^\/') == 0
+    let type = "abspath"
   endif
+  echomsg snippet_path
+  echomsg type
 
   if type == "github"
     let github_username = matchstr(snippet_path, '^\w*')
     let github_reponame = matchstr(snippet_path, '^\w*\/\zs\w*')
-    let repopath = '~/.social-snippets/cache/' . github_username . '/' . github_reponame
+    let repopath = g:social_snippet_cache . '/' . github_username . '/' . github_reponame
     let res = extend(res, {
           \   'repopath': repopath,
-          \   'path': '/' . matchstr(snippet_path, ':\zs.*\ze>\?'),
+          \ })
+  elseif type == 'abspath'
+    let repopath = matchstr(snippet_path, '^\zs.*\ze:')
+    let res = extend(res, {
+          \   'repopath': repopath,
           \ })
   endif
 
   let res = extend(res, {
         \   "cand": cand,
         \   "type": type,
+        \   'path': '/' . matchstr(snippet_path, ':\zs.*\ze>\?'),
         \ })
 
   return res

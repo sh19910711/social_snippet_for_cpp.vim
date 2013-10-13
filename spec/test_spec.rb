@@ -25,6 +25,11 @@ describe 'T001' do
   end
 
   describe '002: #get_snippet_info' do
+    before do
+      _mkdir 't001/002'
+      _mkdir 't001/002/001'
+      _cp get_mock_path('t001_002_001'), 't001/002/001/repo'
+    end
     it '001' do
       RunVimTest('test_t001_002_001.vim').should == true
     end

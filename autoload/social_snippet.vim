@@ -1,6 +1,3 @@
-" 設定
-let s:dir = expand('~/.social-snippets')
-let s:cache_dir = s:dir.'/cache'
 
 
 " データ
@@ -13,13 +10,28 @@ function! social_snippet#GetVersion()
     return '0.0.0'
 endfunction
 
+" システム用
+function! social_snippet#SetHomePath(new_path)
+  if ! isdirectory(a:new_path)
+    throw path . ' is not directory'
+  endif
+  let g:social_snippet_home = a:new_path
+endfunction
+
+function! social_snippet#SetCachePath(new_path)
+  if ! isdirectory(a:new_path)
+    throw path . ' is not directory'
+  endif
+  let g:social_snippet_cache = a:new_path
+endfunction
+
 " インターフェース系の関数
 function! social_snippet#Reset()
     call s:Reset()
 endfunction
 
 function! social_snippet#Setup()
-    let cmd = 'mkdir -p '.s:cache_dir
+    let cmd = 'mkdir -p '.g:social_snippet_cache
     call system(cmd)
 endfunction
 
@@ -48,7 +60,7 @@ function! s:Reset()
 endfunction
 
 function! s:InstallRepository(repo_path)
-    let path = s:cache_dir.'/'.a:repo_path
+    let path = g:social_snippet_cache.'/'.a:repo_path
     if isdirectory(path)
         echo 'already exist'
     else
@@ -60,7 +72,7 @@ function! s:InstallRepository(repo_path)
 endfunction
 
 function! s:UpdateRepository()
-    let repos = split(system('ls -d '.s:cache_dir.'/*/*'))
+    let repos = split(system('ls -d '.g:social_snippet_cache.'/*/*'))
     for repo in repos
         call system('cd '.repo.' && git pull')
     endfor
@@ -89,7 +101,7 @@ function! s:ReadSnippetFile( snip_info )
     let repo_name = a:snip_info.repo_name
     let path = a:snip_info.path
     
-    let repo_dir = s:cache_dir.'/'.user_name.'/'.repo_name
+    let repo_dir = g:social_snippet_cache.'/'.user_name.'/'.repo_name
     if ! isdirectory(repo_dir)
         echo 'Error: 指定されたリポジトリが取得できませんでした。'
         return []
