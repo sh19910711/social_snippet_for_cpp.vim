@@ -6,7 +6,7 @@ endif
 
 " generate home
 if ! isdirectory(g:social_snippet_home)
-  system('mkdir ' . g:social_snippet_home)
+  call system('mkdir ' . g:social_snippet_home)
 endif
 
 " load config
