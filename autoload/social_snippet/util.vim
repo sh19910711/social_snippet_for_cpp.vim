@@ -64,8 +64,13 @@ function! social_snippet#util#get_snippet_info(str)
           \ })
   elseif type == 'abspath'
     " Absolute Path
-    let repopath = matchstr(snippet_path, '^\zs.*\ze:')
-    let snip = repopath . ':' . path
+    if match(snippet_path, ':') == -1
+      let repopath = matchstr(snippet_path, '^\zs.*\ze/')
+      let snip = repopath . '/'
+    else
+      let repopath = matchstr(snippet_path, '^\zs.*\ze:')
+      let snip = repopath . ':' . path
+    endif
     let res = extend(res, {
           \   'repopath': repopath,
           \   'snip': snip,
