@@ -46,7 +46,7 @@ function! social_snippet#InsertSnippet()
 endfunction
 
 function! social_snippet#LoadSnippet(path_str)
-  call s:LoadSnippet(a:path_str)
+  call s:LoadSnippet(a:path_str, 0)
 endfunction
 
 
@@ -88,27 +88,16 @@ function! s:GetSnippetInfoFromPath( path_str )
 endfunction
 
 function! s:ReadSnippetFile( snip_info )
-  let user_name = a:snip_info.user_name
-  let repo_name = a:snip_info.repo_name
-  let path = a:snip_info.path
-
-  let repo_dir = g:social_snippet_cache.'/'.user_name.'/'.repo_name
-  if ! isdirectory(repo_dir)
-    echo 'Error: 指定されたリポジトリが取得できませんでした。'
-    return []
-  endif
-
-  let file_path = repo_dir.'/'.path
-  if ! filereadable(file_path)
+  let filepath = a:snip_info.repopath . a:snip_info.path . a:snip_info.cand
+  if ! filereadable(filepath)
     echo 'Error: 指定されたファイルが取得できませんでした。'
     return []
   endif
-
-  return readfile(file_path)
+  return readfile(filepath)
 endfunction
 
 function! s:GetNamespacesFromPath(path)
-  return split(a:path, '/')[0:-2]
+  return split(a:path, '/')
 endfunction
 
 function! s:isSnipLine(line)
@@ -120,20 +109,20 @@ function! s:isSnippetLine(line)
 endfunction
 
 function! s:GetSnippetPath(comment_line)
-  return matchstr(a:comment_line, '^ *// *@\(snip\|snippet\) *<\zs.*\ze>')
+  return matchstr(a:comment_line, '^\s*//\s*@\(snip\|snippet\)\s*<\zs.*\ze>')
 endfunction
 
 function! s:SubstituteSnipLine(line)
   return substitute(a:line, '^ *// *@snip *<', '// @snippet<', '')
 endfunction
 
-function! s:LoadSnippet(path_str)
-  let key = a:path_str
+function! s:LoadSnippet(path_line, depth)
+  let key = s:GetSnippetPath(a:path_line)
   if has_key(s:snippets, key)
     return
   endif
   let s:snippets[key] = 1
-  let snip_info = s:GetSnippetInfoFromPath(a:path_str)
+  let snip_info = s:GetSnippetInfoFromPath(a:path_line)
 
   " スニペットファイルの解析
   let lines = s:ReadSnippetFile(snip_info)
@@ -142,7 +131,7 @@ function! s:LoadSnippet(path_str)
   for i in range(0,n-1)
     let line = lines[i]
     if s:isSnipLine(line)
-      call s:LoadSnippet(line)
+      call s:LoadSnippet(line, a:depth + 1)
     else
       call add(new_lines, lines[i])
     endif
@@ -150,7 +139,7 @@ function! s:LoadSnippet(path_str)
 
   " コードの生成
   let namespaces = s:GetNamespacesFromPath(snip_info.path)
-  let res = ['', '// @snippet<'.snip_info.user_name.'/'.snip_info.repo_name.':'.snip_info.path.'>']
+  let res = ['', '// @snippet<' . snip_info.snip . snip_info.cand . '>']
   for namespace in namespaces
     let res = res + ['namespace '.namespace.' {']
   endfor
@@ -192,8 +181,7 @@ function! s:InsertSnippet()
     if s:isSnipLine(line)
       call s:Reset()
       call s:CheckLoadedSnippet(new_lines)
-      let snippet_path = s:GetSnippetPath(line)
-      call s:LoadSnippet(snippet_path)
+      call s:LoadSnippet(line, 0)
       if t > 0
         let top = new_lines[0:t-1]
       else

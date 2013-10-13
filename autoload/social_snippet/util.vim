@@ -17,7 +17,7 @@ function! social_snippet#util#get_snippet_info(str)
     let snippet_path = matchstr(a:str, '^\/\/\s*@snip\s*<\zs.*')
   endif
 
-  let cand = matchstr(a:str, '[a-z0-9\.]*\ze>\?$')
+  let cand = matchstr(a:str, '[a-z0-9\-\_\.]*\ze>\?$')
   let type = ""
 
   if match(snippet_path, '^[a-z0-9]') == 0
