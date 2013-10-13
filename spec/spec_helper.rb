@@ -4,7 +4,10 @@ require 'vimrunner/rspec'
 TMP_DIR = "/tmp/test_social_snippet"
 
 def _mkdir_tmp
-  Dir.mkdir "#{TMP_DIR}"
+  unless File.directory? "#{TMP_DIR}"
+    _rm_tmp
+    Dir.mkdir "#{TMP_DIR}"
+  end
 end
 
 def _mkdir(path)
@@ -16,7 +19,9 @@ def _touch(path)
 end
 
 def _rm(path)
-  FileUtils.rm_r "#{TMP_DIR}/#{path}", :secure => true
+  if File.exists? "#{TMP_DIR}/#{path}"
+    FileUtils.rm_r "#{TMP_DIR}/#{path}", :secure => true
+  end
 end
 
 def _rm_tmp

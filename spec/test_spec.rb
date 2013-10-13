@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe 'T001' do
   before do
+    _mkdir_tmp
     _rm 't001'
     _mkdir 't001'
   end
