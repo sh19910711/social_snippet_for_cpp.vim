@@ -9,7 +9,7 @@ install:
   - tar xvf vim-*.tar.bz2
   - cd vim74
   - ./configure --prefix=~/local
-    make && make install
+  - make && make install
 script:
   - export PATH=~/local/bin:${PATH}
   - bundle install
