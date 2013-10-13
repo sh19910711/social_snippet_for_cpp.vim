@@ -30,12 +30,27 @@ def _rm_tmp
   end
 end
 
+def _cp(src, dest)
+  # puts "#{src} => #{TMP_DIR}/#{dest}"
+  FileUtils.cp_r src, "#{TMP_DIR}/#{dest}"
+end
+
+def get_mock_path(path)
+  File.expand_path("../mock/#{path}", __FILE__)
+end
+
 def RunVimTest(script_name)
   script_path = File.expand_path("../#{script_name}", __FILE__)
   vim.edit(script_path)
   ret = vim.command('VimTest')
   # to debug
-  # puts "@RunVimTest: ret = #{ret}"
+  if ENV['VIM_TEST_DEBUG'] == 'ON'
+    puts ""
+    puts "@RunVimTest ------------"
+    puts ret
+    puts "------------------------"
+    puts ""
+  end
   fail_num = ret.match(/Failures: ([0-9]+)/)[1].to_i
   fail_num == 0
 end
