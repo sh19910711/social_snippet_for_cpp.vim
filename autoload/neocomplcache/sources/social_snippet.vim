@@ -4,12 +4,7 @@ let s:source = {
             \ }
 
 function! s:get_dir_list(path)
-    let ls_result = system('ls -m ' . a:path)
-    let ls_result = substitute(ls_result, '\n', ',', 'g')
-    let ls_list = split(ls_result, ',')
-    let ls_list = map(ls_list, "substitute(v:val,'^\\s*\\(.*\\)\\s*$','\\1','')")
-    let ls_list = filter(ls_list, 'v:val != ""')
-    return ls_list
+  return social_snippet#util#get_dir_list(a:path)
 endfunction
 
 function! s:source.initialize()
