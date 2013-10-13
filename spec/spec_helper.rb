@@ -44,11 +44,13 @@ def RunVimTest(script_name)
   vim.edit(script_path)
   ret = vim.command('VimTest')
   # to debug
-  # puts ""
-  # puts "@RunVimTest ------------"
-  # puts ret
-  # puts "------------------------"
-  # puts ""
+  if ENV['VIM_TEST_DEBUG'] == 'ON'
+    puts ""
+    puts "@RunVimTest ------------"
+    puts ret
+    puts "------------------------"
+    puts ""
+  end
   fail_num = ret.match(/Failures: ([0-9]+)/)[1].to_i
   fail_num == 0
 end

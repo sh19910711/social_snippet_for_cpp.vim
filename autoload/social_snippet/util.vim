@@ -11,7 +11,12 @@ endfunction
 function! social_snippet#util#get_snippet_info(str)
   let res = {}
   let path = ""
-  let snippet_path = matchstr(a:str, '^\/\/\s*@snip\s*<\zs.*[:\/]\@<=\ze>\?')
+  if match(a:str, ':') != -1
+    let snippet_path = matchstr(a:str, '^\/\/\s*@snip\s*<\zs.*[:\/]\@<=\ze>\?')
+  else
+    let snippet_path = matchstr(a:str, '^\/\/\s*@snip\s*<\zs.*')
+  endif
+
   let cand = matchstr(a:str, '[a-z0-9\.]*\ze>\?$')
   let type = ""
 
@@ -20,27 +25,57 @@ function! social_snippet#util#get_snippet_info(str)
   elseif match(snippet_path, '^\/') == 0
     let type = "abspath"
   endif
-  echomsg snippet_path
-  echomsg type
+
+  let path = matchstr(snippet_path, ':\zs.*\ze>\?')
 
   if type == "github"
+    " GitHub Path
     let github_username = matchstr(snippet_path, '^\w*')
     let github_reponame = matchstr(snippet_path, '^\w*\/\zs\w*')
-    let repopath = g:social_snippet_cache . '/' . github_username . '/' . github_reponame
+    if match(snippet_path, '/') == -1
+      let github_username = ''
+      let github_reponame = ''
+    else
+      if match(snippet_path, ':') == -1
+        let github_reponame = ''
+      endif
+    endif
+    let repopath = g:social_snippet_cache
+    if github_username != ""
+      let repopath = repopath . '/' . github_username
+      if github_reponame != ""
+        let repopath = repopath . '/' . github_reponame
+      endif
+    endif
+    let snip = ''
+    if github_username != ''
+      let snip = github_username . '/'
+      if github_reponame != ""
+        let snip = snip . github_reponame . ':'
+        if path != ''
+          let snip = snip . path
+        endif
+      endif
+    endif
+    let snip = matchstr(snip, '\zs.*[:/]')
     let res = extend(res, {
           \   'repopath': repopath,
+          \   'snip': snip,
           \ })
   elseif type == 'abspath'
+    " Absolute Path
     let repopath = matchstr(snippet_path, '^\zs.*\ze:')
+    let snip = repopath . ':' . path
     let res = extend(res, {
           \   'repopath': repopath,
+          \   'snip': snip,
           \ })
   endif
 
   let res = extend(res, {
         \   "cand": cand,
         \   "type": type,
-        \   'path': '/' . matchstr(snippet_path, ':\zs.*\ze>\?'),
+        \   'path': '/' . path,
         \ })
 
   return res

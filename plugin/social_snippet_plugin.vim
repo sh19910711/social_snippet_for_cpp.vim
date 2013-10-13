@@ -1,11 +1,7 @@
 " set home directory
 let g:social_snippet_home = expand('~/.social-snippets')
-echomsg expand($SOCIAL_SNIPPET_HOME)
 if isdirectory(expand($SOCIAL_SNIPPET_HOME))
   let g:social_snippet_home = $SOCIAL_SNIPPET_HOME
-else
-  echomsg $SOCIAL_SNIPPET_HOME . " isn't found neither directory."
-  echomsg "use " . expand('~/.social-snippets')
 endif
 
 " generate home
