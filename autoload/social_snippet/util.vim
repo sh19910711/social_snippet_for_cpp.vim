@@ -40,6 +40,7 @@ function! social_snippet#util#get_snippet_info(str)
         let github_reponame = ''
       endif
     endif
+    " Repositry path
     let repopath = g:social_snippet_cache
     if github_username != ""
       let repopath = repopath . '/' . github_username
@@ -47,6 +48,7 @@ function! social_snippet#util#get_snippet_info(str)
         let repopath = repopath . '/' . github_reponame
       endif
     endif
+    " Snippet path
     let snip = ''
     if github_username != ''
       let snip = github_username . '/'
@@ -77,10 +79,22 @@ function! social_snippet#util#get_snippet_info(str)
           \ })
   endif
 
+  " Resolve path
+  let snip_path = path
+  if isdirectory(repopath)
+    " load config
+    let config_path = repopath . '/' . '.social_snippet.json'
+    if filereadable(config_path)
+      let config = eval(join(readfile(config_path)))
+      let path = config.source . '/' . path
+    end
+  endif
+
   let res = extend(res, {
         \   "cand": cand,
         \   "type": type,
         \   'path': '/' . path,
+        \   'snip_path': snip_path,
         \ })
 
   return res

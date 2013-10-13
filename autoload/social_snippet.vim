@@ -97,7 +97,8 @@ function! s:ReadSnippetFile( snip_info )
 endfunction
 
 function! s:GetNamespacesFromPath(path)
-  return split(a:path, '/')
+  let res = split(a:path, '/')
+  return res
 endfunction
 
 function! s:isSnipLine(line)
@@ -138,7 +139,7 @@ function! s:LoadSnippet(path_line, depth)
   endfor
 
   " コードの生成
-  let namespaces = s:GetNamespacesFromPath(snip_info.path)
+  let namespaces = s:GetNamespacesFromPath(snip_info.snip_path)
   let res = ['', '// @snippet<' . snip_info.snip . snip_info.cand . '>']
   for namespace in namespaces
     let res = res + ['namespace '.namespace.' {']
