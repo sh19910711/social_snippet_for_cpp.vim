@@ -45,3 +45,24 @@ function! s:testcase.test5()
   call self.assert.equals(ret.snip, 'user5/')
 endfunction
 
+function! s:testcase.test6()
+  let repo_path = '/tmp/test_social_snippet/t001/002/001/repo1'
+  let str = '// @snip <' . repo_path . ':dir'
+  let ret = social_snippet#util#get_snippet_info(str)
+  call self.assert.equals(ret.repopath, repo_path)
+  call self.assert.equals(ret.path, '/')
+  call self.assert.equals(ret.cand, 'dir')
+  call self.assert.equals(ret.type, 'abspath')
+  call self.assert.equals(ret.snip, repo_path . ':')
+endfunction
+
+function! s:testcase.test7()
+  let repo_path = '/tmp/test_social_snippet/t001/002/001/repo1'
+  let str = '// @snip <' . repo_path . ':dir1/dir2'
+  let ret = social_snippet#util#get_snippet_info(str)
+  call self.assert.equals(ret.repopath, repo_path)
+  call self.assert.equals(ret.path, '/dir1/')
+  call self.assert.equals(ret.cand, 'dir2')
+  call self.assert.equals(ret.type, 'abspath')
+  call self.assert.equals(ret.snip, repo_path . ':dir1/')
+endfunction
