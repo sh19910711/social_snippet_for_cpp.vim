@@ -4,7 +4,7 @@ let s:source = {
             \ }
 
 function! s:get_dir_list(path)
-  social_snippet#util#get_dir_list()
+  return social_snippet#util#get_dir_list(a:path)
 endfunction
 
 function! s:source.initialize()
