@@ -77,3 +77,13 @@ function! s:testcase.test_008()
   call self.assert.equals(ret.snip, '/dir1/dir2/')
 endfunction
 
+function! s:testcase.test_009()
+  let str = '// @snip </dir1/dir2/abc:def/ghi-jkl.cpp'
+  let ret = social_snippet#util#get_snippet_info(str)
+  call self.assert.equals(ret.repopath, '/dir1/dir2/abc')
+  call self.assert.equals(ret.path, '/def/')
+  call self.assert.equals(ret.cand, 'ghi-jkl.cpp')
+  call self.assert.equals(ret.type, 'abspath')
+  call self.assert.equals(ret.snip, '/dir1/dir2/abc:def/')
+endfunction
+
