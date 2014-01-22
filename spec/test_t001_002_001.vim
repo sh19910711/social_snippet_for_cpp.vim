@@ -87,3 +87,13 @@ function! s:testcase.test_009()
   call self.assert.equals(ret.snip, '/dir1/dir2/abc:def/')
 endfunction
 
+function! s:testcase.test_010()
+  let str = '// @snip <username-999/reponame-999:gr'
+  let ret = social_snippet#util#get_snippet_info(str)
+  call self.assert.equals(ret.repopath, g:social_snippet_cache . '/username-999/reponame-999')
+  call self.assert.equals(ret.path, '/')
+  call self.assert.equals(ret.cand, 'gr')
+  call self.assert.equals(ret.type, 'github')
+  call self.assert.equals(ret.snip, 'username-999/reponame-999:')
+endfunction
+
