@@ -1,15 +1,10 @@
 let s:source = {
-            \ 'name': 'social_snippet',
-            \ 'kind': 'complfunc',
-            \ }
+      \ 'name': 'social_snippet',
+      \ 'kind': 'complfunc',
+      \ }
 
 function! s:get_dir_list(path)
-    let ls_result = system('ls -m ' . a:path)
-    let ls_result = substitute(ls_result, '\n', ',', 'g')
-    let ls_list = split(ls_result, ',')
-    let ls_list = map(ls_list, "substitute(v:val,'^\\s*\\(.*\\)\\s*$','\\1','')")
-    let ls_list = filter(ls_list, 'v:val != ""')
-    return ls_list
+  return social_snippet#util#get_dir_list(a:path)
 endfunction
 
 function! s:source.initialize()
@@ -19,45 +14,37 @@ function! s:source.finalize()
 endfunction
 
 function! s:source.get_keyword_pos(str)
-    return match(a:str, '\/\/\s*@snip\s*.*[<:/]\@<=')
+  return match(a:str, '\/\/\s*@snip\s*.*[<:/]\@<=')
 endfunction
 
 function! s:source.get_complete_words(post, str)
-    let path = matchstr(a:str, '^\/\/\s*@snip\s*<\zs.*[:\/]\@<=\ze>\?')
-    let cand = matchstr(a:str, '[a-z0-9\.]*\ze>\?$')
+  let snippet_info = social_snippet#util#get_snippet_info(a:str)
 
-    let snip_info = {
-                \   'user': matchstr(path, '^\w*'),
-                \   'repo': matchstr(path, '^\w*\/\zs\w*'),
-                \   'path': matchstr(path, ':\zs.*\ze>\?')
-                \}
+  if ! isdirectory(snippet_info.repopath)
+    let snippet_info.repopath = matchstr(snippet_info.repopath, '\zs.*\/')
+    let snippet_info.path = ''
+  elseif ! isdirectory(snippet_info.repopath . snippet_info.path)
+    let snippet_info.path = matchstr(snippet_info.path, '\zs.*\/')
+  endif
+  let dir_path = snippet_info.repopath . snippet_info.path
 
-    let snippet_path = '~/.social-snippets/cache'
-    if snip_info.user != ''
-        let snippet_path = snippet_path . '/' . snip_info.user
-    endif
-    if snip_info.repo != ''
-        let snippet_path = snippet_path . '/' . snip_info.repo
-    endif
-    if snip_info.user != ''
-        let snippet_path = snippet_path . '/' . snip_info.path
-    endif
-
-    let l:list = []
-    let ls_list = s:get_dir_list(snippet_path)
+  let l:list = []
+  if isdirectory(dir_path)
+    let ls_list = s:get_dir_list(dir_path)
     for x in ls_list
-        if match(x, '^' . cand ) != -1
-            call add( l:list, {
-                        \   'word': '// @snip <' . path . x,
-                        \   'menu': '[SS]'
-                        \})
-        endif
+      if match(x, '^' . snippet_info.cand ) != -1
+        call add( l:list, {
+              \   'word': '// @snip <' . snippet_info.snip . x,
+              \   'menu': '[SS]'
+              \})
+      endif
     endfor
+  endif
 
-    return neocomplcache#keyword_filter(l:list, "")
+  return neocomplcache#keyword_filter(l:list, "")
 endfunction
 
 function! neocomplcache#sources#social_snippet#define()
-    return s:source
+  return s:source
 endfunction
 
