@@ -20,7 +20,7 @@ function! social_snippet#util#get_snippet_info(str)
   let cand = matchstr(a:str, '[a-z0-9\-\_\.]*\ze>\?$')
   let type = ""
 
-  if match(snippet_path, '^[a-z0-9]') == 0
+  if match(snippet_path, '^[a-zA-Z0-9]') == 0
     let type = "github"
   elseif match(snippet_path, '^\/') == 0
     let type = "abspath"
@@ -30,8 +30,8 @@ function! social_snippet#util#get_snippet_info(str)
 
   if type == "github"
     " GitHub Path
-    let github_username = matchstr(snippet_path, '^\w*')
-    let github_reponame = matchstr(snippet_path, '^\w*\/\zs\w*')
+    let github_username = matchstr(snippet_path, '^[a-zA-Z0-9\-]*')
+    let github_reponame = matchstr(snippet_path, '^[a-zA-Z0-9\-]*\/\zs[a-zA-Z0-9\-]*')
     if match(snippet_path, '/') == -1
       let github_username = ''
       let github_reponame = ''
